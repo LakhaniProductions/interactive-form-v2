@@ -308,6 +308,7 @@ function emailValidator(){
 function ccValidator(){
     if (ccField.value=== '') {
         const ccErrorMessageBlank= ccError.textContent='Credit Card Field Cannot Be Blank.';
+        ccHolder.insertBefore(ccError, ccInfoDiv.nextSibling);
         ccField.style.borderColor='#DE1838';
         ccError.style.display='block'; 
         return false;
@@ -324,13 +325,14 @@ function ccValidator(){
 };
 
 function zipValidator(){
-    if (/^\d{5}$/.test(zipField.value) !== true  && zipField.value.length !== 0){
+    
+     if(/^\d{5}$/.test(zipField.value) !== true ){
         const zipMessage=zipError.textContent='Please Enter a Valid 5 Digit Zip';
         ccHolder.insertBefore(zipError, ccInfoDiv.nextSibling);
         zipField.style.borderColor='#DE1838';
         zipError.style.display='block';  
         return false;
-    }else {
+    } else{ 
         zipField.style.borderColor='';
         zipError.style.display='none';
         return true;
@@ -338,7 +340,7 @@ function zipValidator(){
 };
 
 function cvvValidator(){
-    if (/^\d{3}$/.test(cvvField.value) !== true  && cvvField.value.length !== 0){
+    if (/^\d{3}$/.test(cvvField.value) !== true){
         const cvvErrorMessage= cvvError.textContent='Please Enter a Valid 3 digit CVV.';
         ccHolder.insertBefore(cvvError, ccInfoDiv.nextSibling);
         cvvField.style.borderColor='#DE1838';
@@ -401,7 +403,5 @@ form.addEventListener('submit', e => {
     } else if(!cvvValidator()){
         e.preventDefault();
     }
-
-
 });
 
