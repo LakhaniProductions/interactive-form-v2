@@ -82,7 +82,6 @@ window.onload = function() {
 /**
  * Setting default conditions for the T-shirt Info section
  * 
- * Is this a good instance where I would use an IIFE? 
  */
 
 function defaultTheme() {
@@ -106,7 +105,6 @@ defaultTheme();
 /**
  * Setting default conditions for the Payment Info section
  * 
- * Is this a good instance where I would use an IIFE? 
  */
 
 function defaultPayment(){
@@ -187,13 +185,8 @@ function activitiesCheckedValidator(){
 activitiesFieldset.addEventListener('change', e => {     
     if (checkboxes[1].checked){
         checkboxes[3].disabled =true;
-        checkboxes[5].disabled =true; 
     } else if (checkboxes[3].checked ){
         checkboxes[1].disabled =true;
-        checkboxes[5].disabled =true; 
-    } else if (checkboxes[5].checked){
-        checkboxes[1].disabled =true;
-        checkboxes[3].disabled =true;
     } else {
         checkboxes[1].disabled =false;
         checkboxes[3].disabled =false;
@@ -202,10 +195,8 @@ activitiesFieldset.addEventListener('change', e => {
     
     if (checkboxes[2].checked){
         checkboxes[4].disabled=true;
-        checkboxes[6].disabled=true;
     } else if (checkboxes[4].checked){
         checkboxes[2].disabled=true;
-        checkboxes[6].disabled=true;
     } else if (checkboxes[6].checked){
         checkboxes[2].disabled=true;
         checkboxes[4].disabled=true;
@@ -246,25 +237,12 @@ activitiesFieldset.addEventListener('change', e => {
  * Displaying repsective payment option based off of selction 
  */
 
-paymentSelect.addEventListener('change', e => {
-    if (e.target.value === 'credit card'){
-        ccDiv.style.display='block';
-        payPalDiv.style.display='none';
-        bitCoinDiv.style.display='none';
-    } else if (e.target.value === 'paypal') {
-        payPalDiv.style.display='block';
-        ccDiv.style.display='none';
-        bitCoinDiv.style.display='none';
-    } else {
-        bitCoinDiv.style.display='block';
-        ccDiv.style.display='none';
-        payPalDiv.style.display='none';
-    }
-});
 
 /**
  *** VALIDATION ***
  */
+
+
 
 function nameValidator() {
     if (nameField.value === '') {
@@ -300,19 +278,40 @@ function emailValidator(){
     }
 }
 
+
+function paymentValidator(){
+    if (paymentSelect.value === 'credit card'){
+        ccDiv.style.display='block';
+        payPalDiv.style.display='none';
+        bitCoinDiv.style.display='none';
+        return true;
+    } else if (paymentSelect.value === 'paypal') {
+        payPalDiv.style.display='block';
+        ccDiv.style.display='none';
+        bitCoinDiv.style.display='none';
+        return true;
+    } else if(paymentSelect.value === 'bitcoin'){
+        bitCoinDiv.style.display='block';
+        ccDiv.style.display='none';
+        payPalDiv.style.display='none';
+        return true;
+    } else {return false;}
+}
+
+
 /**
  * Conditional Error Here
  * If empty or invalid different errors
  */
 
 function ccValidator(){
-    if (ccField.value=== '') {
+    if (ccField.value=== '' && paymentSelect.value === 'credit card') {
         const ccErrorMessageBlank= ccError.textContent='Credit Card Field Cannot Be Blank.';
         ccHolder.insertBefore(ccError, ccInfoDiv.nextSibling);
         ccField.style.borderColor='#DE1838';
         ccError.style.display='block'; 
         return false;
-    } else if (/^\d{13,16}$/.test(ccField.value) !== true){
+    } else if (/^\d{13,16}$/.test(ccField.value) !== true && paymentSelect.value === 'credit card'){
         const ccErrorMessageInvalid= ccError.textContent='Please Enter A Valid Credit Card Number Between 13 and 16 Digits Long.';
         ccHolder.insertBefore(ccError, ccInfoDiv.nextSibling);
         ccError.style.display='block';  
@@ -326,7 +325,7 @@ function ccValidator(){
 
 function zipValidator(){
     
-     if(/^\d{5}$/.test(zipField.value) !== true ){
+     if(/^\d{5}$/.test(zipField.value) !== true && paymentSelect.value === 'credit card'){
         const zipMessage=zipError.textContent='Please Enter a Valid 5 Digit Zip';
         ccHolder.insertBefore(zipError, ccInfoDiv.nextSibling);
         zipField.style.borderColor='#DE1838';
@@ -340,7 +339,7 @@ function zipValidator(){
 };
 
 function cvvValidator(){
-    if (/^\d{3}$/.test(cvvField.value) !== true){
+    if (/^\d{3}$/.test(cvvField.value) !== true && paymentSelect.value === 'credit card'){
         const cvvErrorMessage= cvvError.textContent='Please Enter a Valid 3 digit CVV.';
         ccHolder.insertBefore(cvvError, ccInfoDiv.nextSibling);
         cvvField.style.borderColor='#DE1838';
@@ -354,6 +353,9 @@ function cvvValidator(){
 }
 
 
+
+
+
 /**
  * Real Time Error Messages 
  */
@@ -363,6 +365,10 @@ nameField.addEventListener('keyup', e => {
 
 emailField.addEventListener('keyup', e => {
     emailValidator();
+});
+
+paymentSelect.addEventListener('change', e => {
+    paymentValidator();
 });
 
 
@@ -384,6 +390,7 @@ form.addEventListener('submit', e => {
     nameValidator();
     emailValidator();
     activitiesCheckedValidator();
+    paymentValidator();
     ccValidator();
     zipValidator();
     cvvValidator();
@@ -395,9 +402,11 @@ form.addEventListener('submit', e => {
         parentEmail.childNodes[11].style.display='block';
     }else if (!activitiesCheckedValidator()){
         e.preventDefault();
-    }else if(!ccValidator()){
+    } else if (!paymentValidator()){    
+        e.preventDefault();
+        console.log('payment');
+    } else if(!ccValidator()){
         e.preventDefault(); 
-        console.log('cc');
     } else if(!zipValidator()){
         e.preventDefault();
     } else if(!cvvValidator()){
